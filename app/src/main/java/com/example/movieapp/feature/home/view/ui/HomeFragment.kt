@@ -1,13 +1,16 @@
-package com.example.movieapp.ui.home
+package com.example.movieapp.feature.home.view.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.movieapp.databinding.FragmentHomeBinding
+import com.example.movieapp.feature.home.view.adapter.HomeCarouselAdapter
+import com.example.movieapp.feature.home.viewmodel.HomeViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class HomeFragment : Fragment() {
 
@@ -16,23 +19,27 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    lateinit var homeViewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+
+        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        observeMoviesData()
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
+    }
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+    private fun observeMoviesData() {
+        homeViewModel.movies.observe(viewLifecycleOwner){
+            //Manipulate the list to make the required list based on genres
+            val adapter: HomeCarouselAdapter = HomeCarouselAdapter(it)
+            _binding!!.ParentRecyclerView.adapter = adapter
         }
-        return root
     }
 
     override fun onDestroyView() {
