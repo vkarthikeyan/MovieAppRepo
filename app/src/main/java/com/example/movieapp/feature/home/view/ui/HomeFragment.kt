@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.movieapp.databinding.FragmentHomeBinding
 import com.example.movieapp.feature.home.view.adapter.HomeCarouselAdapter
 import com.example.movieapp.feature.home.viewmodel.HomeViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -29,9 +30,21 @@ class HomeFragment : Fragment() {
 
         homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         observeMoviesData()
+        observeErrorData()
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    private fun observeErrorData() {
+        homeViewModel.error.observe(viewLifecycleOwner) {
+            Snackbar.make(binding.root,"Something went wrong. Try again",Snackbar.LENGTH_SHORT).apply {
+                setAction("OK"){
+                    this.dismiss()
+                }
+                show()
+            }
+        }
     }
 
     private fun observeMoviesData() {
